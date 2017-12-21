@@ -1,0 +1,82 @@
+<canvas id="gc" width="400" height="400"></canvas>
+<script>
+window.onload=function() {
+	tick = 100;
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	document.addEventListener("keydown",keyPush);
+	setInterval(game,1000/tick);
+}
+
+gs = tc = 20;
+px = 1;
+py = 10;
+// vby = -0.25;
+wvx = -0.075;
+walls = [];
+c = 0;
+dw = 125;
+
+function game(){
+	c++;
+	ctx.fillStyle="black";
+	ctx.fillRect(0,0,canv.width,canv.height);
+
+
+	if(c == dw){
+		ab = Math.floor(Math.random() + 5); //2 to 5
+		off = Math.floor(Math.random()*(gs - 1 - ab));
+		walls.push({wx:20, off: off, ab: ab});
+		c = 0;
+	}
+	for (var i = 0; i < walls.length; i++) {
+		w = walls[i];
+		wx = w['wx'];
+		ctx.fillStyle="green";
+		ctx.fillRect(wx*gs, 0, gs, gs*gs);
+		ctx.fillStyle="black";
+		ctx.fillRect(wx*gs-1, w['off']*gs, gs+2, gs*w['ab']);
+		w['wx'] += wvx;
+		if(w['wx'] < -1){
+			walls.splice(i, 1);
+		}
+	}
+
+	ctx.fillStyle="red";
+	ctx.fillRect(px*gs, py*gs, gs , gs);
+
+
+	if(typeof walls[0] !== 'undefined'){
+		wx = walls[0]['wx'];
+		off = walls[0]['off'];
+		ab = walls[0]['ab'];
+		if(Math.round(px) == Math.round(wx)){
+			if(py <= off || py >= off+ab ){
+				wait(1000);
+				px = 1;
+				py = 10;
+				walls = [];
+			}
+		}
+	}
+}
+function wait(ms){
+	var d = new Date();
+	var d2 = null;
+	do { d2 = new Date(); }
+	while(d2-d < ms);
+}
+
+function keyPush(e){
+	switch(e.keyCode){
+		case 38:
+		if(py <= 0)return;
+			py-= 0.5;
+		break;
+		case 40:
+		if(py >= tc -1)return;
+			py+= 0.5;
+		break;
+	}
+}
+</script>
